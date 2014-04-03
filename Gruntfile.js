@@ -13,9 +13,19 @@ module.exports = function(grunt) {
 				files: '**/*.scss',
 				tasks: ['sass']
 			}
+		},
+		copy: {
+		  build: {
+		    cwd: '.',
+		    src: [ 'index.html', 'style/**', 'images/**.png' ],
+		    dest: 'build',
+		    expand: true
+		  }
 		}
 	});
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.registerTask('default',['watch']);
+	grunt.registerTask('build',['copy']);
 }

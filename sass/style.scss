@@ -82,6 +82,10 @@ body {
     width: 80%;
     height: 80%;
 
+    overflow: scroll;
+
+    line-height: 190%;
+
     margin: 0;
     padding: 1%;
     display: none;
@@ -98,12 +102,27 @@ body {
       font-size: 1.8em;
     }
 
+    h3, h2 {
+      padding: 0;
+      margin: 0;
+    }
+
     .hide {
       top: 0;
       right: 1%;
       position: absolute;
       margin: 0;
       padding: 0;
+
+      a {
+        &:hover, &:link, &:visited {
+          text-decoration: none;
+        }
+
+        &:hover {
+          border-bottom: 1px solid white;
+        }
+      }
     }
   }
 
