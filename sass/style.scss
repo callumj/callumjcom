@@ -159,6 +159,12 @@ body {
         margin: 0;
         padding: 0;
 
+        &.title {
+          .description, .description a:hover, .description a:link, .description a:visited {
+            font-size: 0.9em;
+          }
+        }
+
         li {
           margin: 0 0 1% 0;
           a, p {

@@ -103,6 +103,8 @@ body {
         list-style-type: none;
         margin: 0;
         padding: 0; }
+        body #content .section ul.detailed_list.title .description, body #content .section ul.detailed_list.title .description a:hover, body #content .section ul.detailed_list.title .description a:link, body #content .section ul.detailed_list.title .description a:visited {
+          font-size: 0.9em; }
         body #content .section ul.detailed_list li {
           margin: 0 0 1% 0; }
           body #content .section ul.detailed_list li a, body #content .section ul.detailed_list li p {
