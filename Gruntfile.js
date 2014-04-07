@@ -17,15 +17,19 @@ module.exports = function(grunt) {
 		copy: {
 		  build: {
 		    cwd: '.',
-		    src: [ 'index.html', 'style/**', 'images/**.png' ],
+		    src: [ 'resume.html', 'index.html', 'style/**', 'images/**.png' ],
 		    dest: 'build',
 		    expand: true
 		  }
+		},
+		exec: {
+			resume: "phantomjs phantom.js"
 		}
 	});
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-exec');
 	grunt.registerTask('default',['watch']);
-	grunt.registerTask('build',['copy']);
+	grunt.registerTask('build',['sass', 'copy', 'exec']);
 }

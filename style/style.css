@@ -1,3 +1,11 @@
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important; }
+    body .quicklinks {
+      display: none; }
+    body a {
+      color: black !important; } }
 body {
   background-color: #004257;
   color: white;
@@ -7,6 +15,8 @@ body {
   margin: 0;
   padding: 0;
   top: 6%; }
+  body p {
+    page-break-before: always; }
   body a, body a:visited, body a:link {
     color: white; }
   body #header {
@@ -103,6 +113,10 @@ body {
         list-style-type: none;
         margin: 0;
         padding: 0; }
+        body #content .section ul.detailed_list.breakup h5, body #content .section ul.detailed_list.breakup p {
+          display: block !important; }
+        body #content .section ul.detailed_list.breakup p {
+          margin-left: 1%; }
         body #content .section ul.detailed_list.title .description, body #content .section ul.detailed_list.title .description a:hover, body #content .section ul.detailed_list.title .description a:link, body #content .section ul.detailed_list.title .description a:visited {
           font-size: 0.9em; }
         body #content .section ul.detailed_list li {
@@ -113,3 +127,9 @@ body {
             font-size: 1.4em;
             color: white;
             margin-right: 5px; }
+          body #content .section ul.detailed_list li h5 {
+            font-size: 1.2em;
+            margin: 0;
+            padding: 0; }
+          body #content .section ul.detailed_list li h5, body #content .section ul.detailed_list li p {
+            display: inline; }

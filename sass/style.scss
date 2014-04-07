@@ -1,4 +1,20 @@
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+
+    .quicklinks {
+      display: none;
+    }
+
+    a {
+      color: black !important;
+    }
+  }
+}
+
 body {
+
   background-color: #004257;
   color: white;
   position: absolute;
@@ -10,6 +26,10 @@ body {
   padding: 0;
 
   top: 6%;
+
+  p {
+    page-break-before: always;
+  }
 
   a, a:visited, a:link {
     color: white;
@@ -159,6 +179,16 @@ body {
         margin: 0;
         padding: 0;
 
+        &.breakup {
+          h5, p {
+            display: block !important;
+          }
+
+          p {
+            margin-left: 1%;
+          }
+        }
+
         &.title {
           .description, .description a:hover, .description a:link, .description a:visited {
             font-size: 0.9em;
@@ -175,6 +205,16 @@ body {
             font-size: 1.4em;
             color: white;
             margin-right: 5px;
+          }
+
+          h5 {
+            font-size: 1.2em;
+            margin: 0;
+            padding: 0;
+          }
+
+          h5, p {
+            display: inline;
           }
         }
       }
