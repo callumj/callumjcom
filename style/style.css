@@ -5,7 +5,9 @@
     body .quicklinks {
       display: none; }
     body a {
-      color: black !important; } }
+      color: black !important; }
+    body .section {
+      page-break-before: always; } }
 body {
   background-color: #004257;
   color: white;
@@ -15,8 +17,6 @@ body {
   margin: 0;
   padding: 0;
   top: 6%; }
-  body p {
-    page-break-before: always; }
   body a, body a:visited, body a:link {
     color: white; }
   body #header {
