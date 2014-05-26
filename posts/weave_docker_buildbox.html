@@ -18,7 +18,7 @@
     <div class="content">
       <div class="section">
         <h2>The problem</h2>
-        <p>I have two servers in different areas running region specific Docker configurations. I want specific Docker configurations on specific hosts without them seeing the rest of the Docker files, and I don't want the servers to have to be pushed configuration to them. They should poll for new configuration, pull it down and apply the latest.</p>
+        <p>I have two servers in different areas running region specific Docker configurations. I want specific Docker configurations on specific hosts without them seeing the rest of the Docker files, and I don't want the servers to have to be pushed configuration. They should poll for new configuration, pull it down and apply the latest.</p>
 
         <p>I want to push the latest configuration to Github, have it compiled, packaged up and the relevant servers pick it up.</p>
       </div>
@@ -45,16 +45,22 @@
 
         <p>The weave client doesn't use any configuration file or daemon, it's just called with the location of the package, the final output directory and (optionally) a path to the decryption key. The rest is controlled by pre_extraction and post_extraction shell scripts which are bundled into the configuration package.</p>
 
-        <p>I have weave setup under a cron job to download the package every 30 minutes, if the package is updated then post_extraction.sh is called.
+        <p>I have weave setup under a cron job to download the package every 30 minutes, if the package is updated then post_extraction.sh is called.</p>
+
+        <p>With weave I've got packaged configuration sets that limit the responsibility of each server.</p>
+
+        <p class="image"><img src="weave_docker_buildbox/pt1.jpg" /></p>
+      </div>
+
+      <div section="section">
+        <h2>post_extraction.sh and Docker</h2>
 
         <p><a href="https://github.com/callumj/DockerConf/blob/master/post_extraction.sh">post_extraction.sh</a> is a basic script that loops through each directory with a Dockerfile and then updates/installs the running Docker containers to the latest version. While Dockerfiles don't have any versioning support I make use a VERSION comment that the script parses and uses as a docker contain tag, e.g. callumjcom-deploy:v0.04.</p>
 
-        <p>The post_extraction.sh checks if the latest image is available on the Docker, builds it if it needs to, shuts down the previous container version and starts up the new one. If there are any additional arguments such as a volume mount, it will pass it in.</p>
+        <p>The post_extraction.sh is a basic shell script that loops through the folders in the working directory, looks at the Dockerfile and pulls in the VERSION comment. The script first checks if the image matching the VERRSION exists, if there's no image with the VERSION available then an image is built from the Dockerfile. Any old containers matching the name are stopped and the new container is started up with the latest VERSION.</p>
 
-        <p>With weave I've got packaged configuration sets that limit the responsibility of each server.</p>
+        <p class="image"><img src="weave_docker_buildbox/pt2.jpg" /></p>
       </div>
-
-
 
       <div class="section">
         <h2>Buildbox</h2>
@@ -70,6 +76,8 @@
         <p>With Buildbox I have a <a href="https://github.com/callumj/weave_example_projects/">project</a> setup that Buildbox pulls onto my agent's server, runs the build script I specify and deliver's the build results to my email address.</p>
 
         <p>The build script (build_docker.sh) is a shell script that brings the <a href="https://github.com/callumj/DockerConf">weave source repository</a> up to date locally and then runs the weave compiler against the configuration file. This is an excellent seperation of responsibility, Buildbox is the manager that brings me the latest repository and weave is worker that sends the package up.</p>
+
+        <p class="image"><img src="weave_docker_buildbox/pt3.jpg" /></p>
       </div>
 
       <div class="section">
