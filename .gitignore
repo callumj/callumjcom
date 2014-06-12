@@ -1,3 +1,4 @@
 s3_website.yml
 build/
 node_modules/
+style/
