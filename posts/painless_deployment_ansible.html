@@ -1,0 +1,166 @@
+<html>
+<head>
+  <title>Painless deployment with Ansible and weave - callumj.com</title>
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="../style/style.css">
+</head>
+<body class="posts">
+
+  <div id="header">
+    <h1><a href="/">Callum Jones</a></h1>
+  </div>
+
+  <div id="post">
+    <div class="banner" style="background-image:url('weave_docker_buildbox/banner.jpg');">
+      <h2>Painless deployment with Ansible and weave</h2>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <p>I'm currently working on a product that is hosted on the premises of our education customers, it depends on access to a school's network shares and internal databases. Being a school they each have their own incredibly interesting and at times oddly configured network configurations, but one thing is common: the box is usually behind a frontend proxy and the only way in is via VPN.</p>
+
+        <p>The traditional Rails deployment way via Capistrano just does not cut it, these schools have differing VPN solutions from Cisco and Microsoft. Some work with the standard VPN client that ships with OS X and some require you install some a third-party client. It's incredibly complicated to somehow automate a way to switch between VPN configurations for each Capistrano push.</p>
+
+        <p>As some VPN policies mandate your entire network go over their VPN during the session you may end up dealing a HTTP proxy. Too bad if some of your Gems have been configured to pull over SSH.</p>
+
+        <p>This is all too hard in it's current state, we needed to switch from a push scenario to our servers being in a pull scenario.</p>
+
+        <p>Our pull scenario has allowed us to focus on application deployment at incredible speeds. We no longer need to take 30 minutes out of our days to switch to a VPN configuration and run Chef and Capistrano tasks. We now just promote our staging branch to production, our build server builds the packages and our clients will be brought up the latest version when school finishes. There's no Friday afternoon deployment angst.</p>
+      </div>
+
+       <div class="section">
+        <h2>Packaging</h2>
+        <p>With <a href="https://github.com/callumj/weave">weave</a> we are building deployment packages for each our client's environments. Bundling the Ansible playbook, backend application and frontend web application into one package allows each of the client's servers to poll S3 for a new file, download it, extract it and execute the first task.</p>
+
+        <p>Our CI server doesn't need to worry about various VPN configurations, it pushes all of the client's packages up to S3 whenever a new <em>production</em> build is successfully completed. Its job is done, and its up to the clients to pull down the packages outside of school hours</p>
+
+        <p>Because database configuration, settings and styling differ from school to school weave is perfect for merging the customisations into the final packages. We only need to mimic the directory structure in our weave project and the project files will override the original packages</p>
+
+        <p>Our base looks something like this:</p>
+        <ul>
+          <li>playbook.yml</li>
+          <li>post_extraction.sh</li>
+          <li>files/
+            <ul>
+              <li>backend_app/
+                <ul>
+                  <li>app/</li>
+                  <li>config/</li>
+                </ul>
+              </li>
+              <li>frontend_app/
+                <ul>
+                  <li>public/</li>
+                  <li>config/</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <p>As for our weave <em>configurations</em> directory:</p>
+        <ul>
+          <li>schoolA
+            <ul>
+              <li>files/
+                <ul>
+                  <li>backend_app/
+                    <ul>
+                      <li>config/
+                        <ul>
+                          <li>database.yml</li>
+                          <li>config.yml</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>frontend_app/
+                    <ul>
+                      <li>public/
+                        <ul>
+                          <li>logo.png</li>
+                          <li>favicon.ico</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>schoolB
+            <ul>
+              <li>....</li>
+            </ul>
+          </li>
+          <li>schoolC
+            <ul>
+              <li>....</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p>For each configuration (schoolA, schoolB, schoolC) weave will produce a package which is the union of the base directory and that configuration directory. Configuration directories will be merged last, meaning they will override files such as customised assets or configuration files.</p>
+
+        <p>Before we generate the packages on the build server we perform a full <em>bundle install --deployment</em> on the base package, which allows us to ensure the app ships with the gems and binaries out of the box. The target servers never need to run bundle install or deal with proxy issues.</p>
+      </div>
+
+      <div class="section">
+        <h2>Ansible</h2>
+        <p>Ansible provides us with the automation to not only move our application into place but also bring the target system up to the expected level.</p>
+
+        <p>Ansible in our use replaces both Chef and Capistrano. While it is usually case that you want Chef/Ansible/Puppet performing your system deployment and Capistrano performing your application deployment we find that coupling the process together allows us to have a central point for configuring what happens after weave extracts on the target system.</p>
+
+        <p>I forced the switch to Ansible from Chef to reduce complexity that seems present in Chef. With Ansible you're usually just dealing with YAML files, there's no complicated programming - what you type is usually hope the task will execute. Our team is a mix of developers who have not touched Ruby so it's unfair in the heat of the moment for them to deal with a deployment process and figure out this programming language at the same time.</p>
+
+        <p>I was unimpressed with the magic that comes from Chef. When including packages from Berkshelf it was unclear how these various function names were being defined, you could not search for their name as their name was being generated from the relevant filename. What added to the complexity was the array of folders Chef has: cookbooks, roles, recipes. In our Ansible project we have a folder called roles, and each role then has one or more tasks; it's incredibly simple and easy to follow.</p>
+
+        <p>We replaced Capistrano because it seems to lack the ability to run on the localhost without the need for SSH. Ansible can execute commands in the current process or you can go back to the usual SSH process. For an agent like setup we prefer the current process way.</p>
+
+        <p>After weave has extracted the new package, it invokes <em>post_extraction.sh</em> which ensures Ansible is installed and then runs the Ansible playbook.</p>
+
+        <ul>
+          <li>Ensure the essential Ubuntu packages are installed (Samba, FreeTDS, Redis, Git, ImageMagick)</li>
+          <li>Check for Ruby and Nginx</li>
+          <li>Compile and make Ruby and Nginx</li>
+          <li>Create the appropriate users and copy across the developer keys into authorized_keys</li>
+          <li>Mount any SMB shares</li>
+        </ul>
+
+        <p>Our Ansible playbook then moves into operating more like a Capistrano process:</p>
+
+        <ul>
+          <li>Deploy the Nginx site pointing to the Unicorn socket and public directory</li>
+          <li>Copy the Rails backend_app/ from the files/ directory into /apps/backend/DATE</li>
+          <li>Copy the frontend_app/public into the /apps/backend/DATE/public directory</li>
+          <li>Perform the Rails database creation/migrations</li>
+          <li>Check this newly deployed app passes integrity checks (Database comms)</li>
+          <li>Move the newly deployed to /apps/backend/current</li>
+          <li>Restart Unicorn and Sidekiq</li>
+        </ul>
+
+        <p>With Ansible we have recreated Capistrano, and we think it's for the better. We have complete control over the deployment process and know exactly how it will be carried out.</p>
+      </div>
+
+      <div class="section">
+        <h2>Bootstrapping</h2>
+        <p>When a new client is brought on board we need to configure their server for pulling down their specific package. To aid this process we have developed a bootstrap script that walks the deploying engineer through the steps of getting weave into a cron task.</p>
+
+        <p>It's a fairly basic Bash script that covers the following:</p>
+        <ul>
+          <li>Asks for the name of the client</li>
+          <li>Checks there is a package on S3 for that client</li>
+          <li>Asks for the decryption key</li>
+          <li>Asks to confirm or replace the cron job schedule (before school and after school)</li>
+          <li>Installs weave</li>
+          <li>Installs the cron job</li>
+        </ul>
+
+        <p>We now have a functioning target that will periodically check in and automatically install our package.</p>
+      </div>   
+
+    <!--<img src="http://metrix.callumj.com/metric/increment?key=callumj&subkey=painlessansible" width=0 height=0 />-->
+  </div>
+
+</body>
+</html>
