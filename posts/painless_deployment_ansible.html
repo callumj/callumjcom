@@ -28,7 +28,16 @@
         <p>Our pull scenario has allowed us to focus on application deployment at incredible speeds. We no longer need to take 30 minutes out of our days to switch to a VPN configuration and run Chef and Capistrano tasks. We now just promote our staging branch to production, our build server builds the packages and our clients will be brought up the latest version when school finishes. There's no Friday afternoon deployment angst.</p>
       </div>
 
-       <div class="section">
+      <div class="section">
+        <h2>The application</h2>
+        <p>As a background, the application is a fairly straightforward Rails API application. It has a configuration file that enables various features and specifies the LDAP authentication source; it is something that changes from client to client.</p>
+
+        <p>The application also serves out the public/ directory which provides a frontend Angular application that communicates with the API provided by the backend. The frontend requires no configuration as it pulls its configuration on pageload from the API.The frontend does require visual customisation in the form of replacing logos and favicons.</p>
+
+        <p>So our application is pretty easy to customise per client, processes just need to be in place that replace or copy in client specific files. The application itself can customise itself through various rake tasks.</p>
+      </div>
+
+      <div class="section">
         <h2>Packaging</h2>
         <p>With <a href="https://github.com/callumj/weave">weave</a> we are building deployment packages for each our client's environments. Bundling the Ansible playbook, backend application and frontend web application into one package allows each of the client's servers to poll S3 for a new file, download it, extract it and execute the first task.</p>
 
@@ -136,6 +145,7 @@
           <li>Perform the Rails database creation/migrations</li>
           <li>Check this newly deployed app passes integrity checks (Database comms)</li>
           <li>Move the newly deployed to /apps/backend/current</li>
+          <li>Installs the cronjobs from <em>whenever</em></li>
           <li>Restart Unicorn and Sidekiq</li>
         </ul>
 
@@ -157,7 +167,14 @@
         </ul>
 
         <p>We now have a functioning target that will periodically check in and automatically install our package.</p>
-      </div>   
+      </div>
+
+      <div class="section">
+        <h2>Wrapping up</h2>
+        <p>So we have a complete deployment "pipeline" that is mostly handsfree, especially for those developers that may be busy on other projects and don't want to waste time wrestling with remote servers.</p>
+
+        <p>We push to production, our CI server builds the packages for our clients. Our clients pull the latest package down when ready, prep themselves and then move the latest application into place.</p>
+      </div>
 
     <!--<img src="http://metrix.callumj.com/metric/increment?key=callumj&subkey=painlessansible" width=0 height=0 />-->
   </div>
