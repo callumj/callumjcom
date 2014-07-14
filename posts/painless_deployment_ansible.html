@@ -11,7 +11,7 @@
   </div>
 
   <div id="post">
-    <div class="banner" style="background-image:url('weave_docker_buildbox/banner.jpg');">
+    <div class="banner" style="background-image:url('painless_deployment_ansible/banner.jpg');">
       <h2>Painless deployment with Ansible and weave</h2>
     </div>
 
@@ -39,6 +39,9 @@
 
       <div class="section">
         <h2>Packaging</h2>
+
+        <p class="image"><img src="painless_deployment_ansible/push.jpg" /></p>
+
         <p>With <a href="https://github.com/callumj/weave">weave</a> we are building deployment packages for each our client's environments. Bundling the Ansible playbook, backend application and frontend web application into one package allows each of the client's servers to poll S3 for a new file, download it, extract it and execute the first task.</p>
 
         <p>Our CI server doesn't need to worry about various VPN configurations, it pushes all of the client's packages up to S3 whenever a new <em>production</em> build is successfully completed. Its job is done, and its up to the clients to pull down the packages outside of school hours</p>
@@ -116,13 +119,16 @@
 
       <div class="section">
         <h2>Ansible</h2>
+
+        <p class="image"><img src="painless_deployment_ansible/pull.jpg" /></p>
+
         <p>Ansible provides us with the automation to not only move our application into place but also bring the target system up to the expected level.</p>
 
         <p>Ansible in our use replaces both Chef and Capistrano. While it is usually case that you want Chef/Ansible/Puppet performing your system deployment and Capistrano performing your application deployment we find that coupling the process together allows us to have a central point for configuring what happens after weave extracts on the target system.</p>
 
         <p>I forced the switch to Ansible from Chef to reduce complexity that seems present in Chef. With Ansible you're usually just dealing with YAML files, there's no complicated programming - what you type is usually hope the task will execute. Our team is a mix of developers who have not touched Ruby so it's unfair in the heat of the moment for them to deal with a deployment process and figure out this programming language at the same time.</p>
 
-        <p>I was unimpressed with the magic that comes from Chef. When including packages from Berkshelf it was unclear how these various function names were being defined, you could not search for their name as their name was being generated from the relevant filename. What added to the complexity was the array of folders Chef has: cookbooks, roles, recipes. In our Ansible project we have a folder called roles, and each role then has one or more tasks; it's incredibly simple and easy to follow.</p>
+        <p>I was unimpressed with the magic that comes from Chef. When including recipes from Berkshelf it was unclear how these various function names were being defined, you could not search for the name that was being generated from the relevant filename. What added to the complexity was the array of folders Chef has: cookbooks, roles, recipes. In our Ansible project we have a folder called roles, and each role then has one or more tasks; it's incredibly simple and easy to follow.</p>
 
         <p>We replaced Capistrano because it seems to lack the ability to run on the localhost without the need for SSH. Ansible can execute commands in the current process or you can go back to the usual SSH process. For an agent like setup we prefer the current process way.</p>
 
@@ -176,7 +182,7 @@
         <p>We push to production, our CI server builds the packages for our clients. Our clients pull the latest package down when ready, prep themselves and then move the latest application into place.</p>
       </div>
 
-    <!--<img src="http://metrix.callumj.com/metric/increment?key=callumj&subkey=painlessansible" width=0 height=0 />-->
+    <img src="http://metrix.callumj.com/metric/increment?key=callumj&subkey=painlessansible" width=0 height=0 />
   </div>
 
 </body>
