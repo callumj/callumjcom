@@ -21,7 +21,7 @@
 
         <p>The traditional Rails deployment way via Capistrano just does not cut it, these schools have differing VPN solutions from Cisco and Microsoft. Some work with the standard VPN client that ships with OS X and some require you install some a third-party client. It's incredibly complicated to somehow automate a way to switch between VPN configurations for each Capistrano push.</p>
 
-        <p>As some VPN policies mandate your entire network go over their VPN during the session you may end up dealing a HTTP proxy. Too bad if some of your Gems have been configured to pull over SSH.</p>
+        <p>As some VPN policies mandate your entire network go over their VPN during the session you may end up dealing with a HTTP proxy. Too bad if some of your Gems have been configured to pull over SSH.</p>
 
         <p>This is all too hard in it's current state, we needed to switch from a push scenario to our servers being in a pull scenario.</p>
       </div>
@@ -135,7 +135,7 @@
 
         <p>Ansible in our use replaces both Chef and Capistrano. While it is usually case that you want Chef/Ansible/Puppet performing your system deployment and Capistrano performing your application deployment we find that coupling the process together allows us to have a central point for configuring what happens after weave extracts on the target system.</p>
 
-        <p>I forced the switch to Ansible from Chef to reduce complexity that seems present in Chef. With Ansible you're usually just dealing with YAML files, there's no complicated programming - what you type is usually hope the task will execute. Our team is a mix of developers who have not touched Ruby so it's unfair in the heat of the moment for them to deal with a deployment process and figure out this programming language at the same time.</p>
+        <p>I forced the switch to Ansible from Chef to reduce complexity that seems present in Chef. With Ansible you're usually just dealing with YAML files, there's no complicated programming - what you type is usually what Ansible will perform. Our team is a mix of developers who have not touched Ruby so it's unfair in the heat of the moment for them to deal with a deployment process and figure out this programming language at the same time.</p>
 
         <p>I was unimpressed with the magic that comes from Chef. When including recipes from Berkshelf it was unclear how these various function names were being defined, you could not search for the name that was being generated from the relevant filename. What added to the complexity was the array of folders Chef has: cookbooks, roles, recipes. In our Ansible project we have a folder called roles, and each role then has one or more tasks; it's incredibly simple and easy to follow.</p>
 
