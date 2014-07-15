@@ -28,7 +28,7 @@
 
       <div class="section">
         <h2>The goal</h2>
-        <p>Our goal is produce two processes. The first process needs to prep the application (checkout master, bundle install deployment) and package the Ansible playbook, backend application and frontend into a base directory and per client merge in any customisations to produce client specific packages. The CI server can easily perform this task periodically or when the team decides on a release. The developer doesn't need to worry about having Knife installed on the system or getting ready to SSH into a system behind a complicated and restricted VPN tunnel.</p>
+        <p>Our goal is to produce two processes. The first process needs to prep the application (checkout master, bundle install deployment) and package the Ansible playbook, backend application and frontend into a base directory and per client merge in any customisations to produce client specific packages. The CI server can easily perform this task periodically or when the team decides on a release. The developer doesn't need to worry about having Knife installed on the system or getting ready to SSH into a system behind a complicated and restricted VPN tunnel.</p>
 
         <p>Our second process occurs on each of the client servers out on premise. These servers take more of role than a standard Chef or Capistrano node, they instead act as <em>agents</em>. These agents check in with a central repository (such as HTTP endpoint with eTag support - S3) and act upon seeing an updated package. They download the package, decrypt it with their specific key and invoke the callback script inside the package.</p>
 
